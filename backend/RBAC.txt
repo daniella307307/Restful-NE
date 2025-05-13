@@ -1,0 +1,23 @@
+-- Users table with 'role' column
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(100) NOT NULL,
+  role ENUM('admin', 'manager', 'user') DEFAULT 'user', -- Define allowed roles
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Optional: Permissions table (if roles have granular permissions)
+CREATE TABLE permissions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  role VARCHAR(50) NOT NULL,
+  resource VARCHAR(50) NOT NULL,  -- E.g., 'vehicle', 'user'
+  action VARCHAR(50) NOT NULL,    -- E.g., 'create', 'delete'
+  UNIQUE KEY (role, resource, action)
+);
+
+-- Example permissions for roles
+INSERT INTO permissions (role, resource, action) VALUES
+('admin', 'users', 'delete'),
+('manager', 'vehicles', 'create');

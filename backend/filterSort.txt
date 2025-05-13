@@ -1,0 +1,6 @@
+// Example: /users?page=1&limit=10&role=admin&sort=name
+const role = req.query.role;
+const sort = req.query.sort || 'id';
+let query = 'SELECT * FROM users';
+if (role) query += ` WHERE role = '${role}'`;
+query += ` ORDER BY ${sort} LIMIT ? OFFSET ?`;
