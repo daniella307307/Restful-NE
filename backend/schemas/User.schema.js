@@ -39,6 +39,18 @@ const updateUserSchema = joi
   })
   .min(1); // At least one field is required
 
+ 
+const updateUserSchemaWithPassword = joi.object({
+  name: joi.string().min(3).max(30),
+  email: joi.string().email(),
+  password: joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
+  currentPassword: joi.string().when('password', {
+    is: joi.exist(),
+    then: joi.string().required(),
+  }),
+}).min(1); // At least one field is required
 const passwordResetSchema = joi.object({
   token: joi.string().required(),
   newPassword: joi.string().min(8).required(),
@@ -53,4 +65,5 @@ module.exports = {
   registerSchema,
   loginSchema,
   updateUserSchema,
+  passwordResetSchema
 };

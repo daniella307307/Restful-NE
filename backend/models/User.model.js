@@ -97,6 +97,10 @@ class User {
     ]);
     return rows.length > 0;
   }
+  // ------ update password ----
+  static async updatePassword(password){
+    await pool.query("UPDATE user SET password =? ",[password]);
+  }
 }
 
 module.exports = User;

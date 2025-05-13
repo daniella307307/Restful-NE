@@ -76,8 +76,107 @@ const login= async(req,res)=>{
         res.status(500).json({error:"Server error during login"})
     }
 }
+/**
+ * Update user
+ */
 
+const update = async (req,res)=>{
+  try {
+    const {error,value} = userSchema.updateUserSchema.validate(req.body);
+    if(error){
+        return res.status(401).json({error:error.details[0].message});
+    }
+    //check for fields being updated
+    if(value.email){
+        const existingUser = await User.findByEmail(value.email);
+        if(existingUser && existingUser.id !== req.user.userId){
+           return res.status(409).json({error:"Email already in use"});
+        };
+    };
+    //prepare update data
+    const updateData = {
+        name: value.name,
+        email:value.email,
+    }
+    await User.update(req.user.userId,updateData);
+
+    const updatedUser = await User.findById(req.user.userId);
+    const {password,...safeUser} = updatedUser;
+    res.status(200).json(safeUser);
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({error:"Server error during updating"});
+  }
+}
+const updateWithPassword = async(req,res)=>{
+   try {
+    const {error,value} = userSchema.updateUserSchema.validate(req.body);
+    if(error){
+        return res.status(401).json({error:error.details[0].message});
+    }
+    //check for fields being updated
+    if(value.email){
+        const existingUser = await User.findByEmail(value.email);
+        if(existingUser && existingUser.id !== req.user.userId){
+           return res.status(409).json({error:"Email already in use"});
+        };
+    };
+    //prepare update data
+    const updateData = {
+        name: value.name,
+        email:value.email,
+    }
+    // 4. Optional: Handle password update separately
+      if (value.password) {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(value.password, salt);
+      }
+    await User.update(req.user.userId,updateData);
+    
+    const updatedUser = await User.findById(req.user.userId);
+    const {password,...safeUser} = updatedUser;
+    res.status(200).json(safeUser);
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({error:"Server error during updating"});
+  } 
+}
+const resetPassword=async(req,res)=>{
+    try {
+        const {error,value} = userSchema.passwordResetSchema(req.body);
+        if(error){
+            return res.status(401).json({error:error.details[0].message});
+        }
+        const salt = bcrypt.genSalt(10);
+        const password= bcrypt.hash(value.password,salt)
+        await User.updatePassword(password);
+        res.status(201).json({message:"Password reset successfully"});
+    } catch (error) {
+        
+    }
+}
+
+const getllUsers = async(req,res)=>{
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({ error: 'Invalid pagination parameters' });
+    }
+
+    const { users, pagination } = await User.getAllPaginated(page, limit);
+    res.json({ users, pagination });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+
+}
 module.exports={
     register,
-    login
+    login,
+    update,
+    updateWithPassword,
+    resetPassword,
+    getllUsers
 }
