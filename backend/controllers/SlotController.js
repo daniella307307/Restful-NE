@@ -34,7 +34,25 @@ const getAllSlots = async(req,res)=>{
     res.status(500).json({ error: `Server error ${err}`});
   }
 }
+
+const deleteSlot = async(req,res)=>{
+    try {
+        const slotId = req.query.id;
+        if (!slotId) {
+            return res.status(400).json({ error: "Slot ID is required" });
+        }
+        const slotExists = await Slot.findById(slotId);
+        if (!slotExists){
+            return res.status(400).json({error:"Slot is not registered"});
+        }
+        await Slot.deleteSlot(slotId);
+        return res.status(200).json({message:"Slot deleted successfully"})
+    } catch (error) {
+        res.status(500).json({err:`Server error during slot deletion ${error}`})
+    }
+}
 module.exports={
     createSlot,
-    getAllSlots
+    getAllSlots,
+    deleteSlot
 }

@@ -45,6 +45,9 @@ class Slot{
   static async updateSlot(slotId,status){
     await pool.query('Update slot set slotStatus=?',[status])
   }
+  static async findById(slotId){
+    await pool.query("Select * from users where id= ?",[slotId]);
+  }
 }
 
 module.exports=Slot;
