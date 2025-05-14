@@ -1,18 +1,26 @@
 const User = require('../models/User.model');
 
-//middleware to restrict access by role
-const requireRole =(allowedRoles)=>{
-    return async(req,res,next)=>{
-        const userId = req.user.id;
-        const userRole= await User.getRole(userId);
-        if(!allowedRoles.includes(userRole)){
-            return res.status(403).json({error:"Access denied"})
-        }
-        next();
-    };
+// Middleware to restrict access by role
+const requireRole = (allowedRoles) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user || !req.user.userId) {
+        return res.status(401).json({ error: "Unauthorized: Missing user data" });
+      }
+
+      const userId = req.user.userId;
+      const userRole = await User.getRole(userId);
+
+      if (!allowedRoles.includes(userRole)) {
+        return res.status(403).json({ error: "Access denied: Insufficient role" });
+      }
+
+      next();
+    } catch (err) {
+      console.error("Role check error:", err);
+      res.status(500).json({ error: "Server error during role verification" });
+    }
+  };
 };
 
-// Example usage: Protect a route to admins only
-// router.get('/admin', requireRole(['admin']), adminController.dashboard);
-
-module.exports = {requireRole};
+module.exports = { requireRole };

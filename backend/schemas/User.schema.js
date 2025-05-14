@@ -60,10 +60,27 @@ const passwordResetSchema = joi.object({
       "any.only": "Passwords do not match",
     }),
 });
+
+const otpSchema = joi.object({
+  email:joi.string().email().required().messages({
+    "string.email":"Email must be valid"
+  })
+})
+
+const verifyOtpSchema = joi.object({
+  email:joi.string().email().required().messages({
+    "string.email":"email must be valid"
+  }),
+  otp:joi.string().required().messages({
+    "string.otp":"Otp format must be valid"
+  })
+})
 module.exports = {
   registerSchema,
   loginSchema,
   updateUserSchema,
   passwordResetSchema,
-  updateUserSchemaWithPassword
+  updateUserSchemaWithPassword,
+  otpSchema,
+  verifyOtpSchema
 };

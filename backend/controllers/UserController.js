@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs");
 const userSchema= require('../schemas/User.schema');
 const {generateToken} =require('../utils/jwtUtil');
+const emailUtil = require('../utils/emailUtil');
 /**
  * Register a new user
  */
@@ -170,13 +171,35 @@ const getAllUsers = async(req,res)=>{
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
-
 }
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.query.id; // Changed from req.params.id
+
+        if (!userId) {
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        await User.delete(userId);
+
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        console.error("Delete error:", error);
+        res.status(500).json({ error: "Internal server error during deletion" });
+    }
+};
+
 module.exports={
     register,
     login,
     update,
     updateWithPassword,
     resetPassword,
-    getAllUsers
+    getAllUsers,
+    deleteUser
 }
