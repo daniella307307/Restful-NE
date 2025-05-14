@@ -75,13 +75,13 @@ class User {
         [limit,offset]
     );
     //Get total count for users
-    const [totalRows] = await pool.query("SELECT COUNT(*) AS count FROM ussers");
+    const [totalRows] = await pool.query("SELECT COUNT(*) AS count FROM users");
     const total = totalRows[0].count;
     const totalPages = Math.ceil(total/limit);
     return{
         users,
         pagination:{
-            total,totalPages,currentPae:page, limit,
+            total,totalPages,currentPage:page, limit,
         },
     };
   }
@@ -98,8 +98,8 @@ class User {
     return rows.length > 0;
   }
   // ------ update password ----
-  static async updatePassword(password){
-    await pool.query("UPDATE user SET password =? ",[password]);
+  static async updatePassword(password,userId){
+    await pool.query("UPDATE users SET password =? WHERE id= ?",[password,userId]);
   }
 }
 

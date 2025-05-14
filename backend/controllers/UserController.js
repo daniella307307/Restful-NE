@@ -110,7 +110,7 @@ const update = async (req,res)=>{
 }
 const updateWithPassword = async(req,res)=>{
    try {
-    const {error,value} = userSchema.updateUserSchema.validate(req.body);
+    const {error,value} = userSchema.updateUserSchemaWithPassword.validate(req.body);
     if(error){
         return res.status(401).json({error:error.details[0].message});
     }
@@ -143,20 +143,20 @@ const updateWithPassword = async(req,res)=>{
 }
 const resetPassword=async(req,res)=>{
     try {
-        const {error,value} = userSchema.passwordResetSchema(req.body);
+        const {error,value} = userSchema.passwordResetSchema.validate(req.body);
         if(error){
             return res.status(401).json({error:error.details[0].message});
         }
-        const salt = bcrypt.genSalt(10);
-        const password= bcrypt.hash(value.password,salt)
+        const salt =await bcrypt.genSalt(10);
+        const password=await bcrypt.hash(value.newPassword,salt)
         await User.updatePassword(password);
-        res.status(201).json({message:"Password reset successfully"});
+        res.status(200).json({message:"Password reset successfully"});
     } catch (error) {
-        
+        res.status(500).json({error:`Internal server error ${error}`})
     }
 }
 
-const getllUsers = async(req,res)=>{
+const getAllUsers = async(req,res)=>{
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -178,5 +178,5 @@ module.exports={
     update,
     updateWithPassword,
     resetPassword,
-    getllUsers
+    getAllUsers
 }

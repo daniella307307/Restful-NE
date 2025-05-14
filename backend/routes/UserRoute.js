@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
 // GET /users?page=1&limit=10
-router.get('/all',roleMiddleware.requireRole,userController.getllUsers);
+router.get('/users',roleMiddleware.requireRole,authMiddleware.requireAuth,userController.getAllUsers);
 //auth
 router.post('/register',userController.register);
 router.post('/login', userController.login);

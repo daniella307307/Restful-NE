@@ -52,7 +52,6 @@ const updateUserSchemaWithPassword = joi.object({
   }),
 }).min(1); // At least one field is required
 const passwordResetSchema = joi.object({
-  token: joi.string().required(),
   newPassword: joi.string().min(8).required(),
   confirmPassword: joi.string()
     .valid(joi.ref("newPassword"))
@@ -65,5 +64,6 @@ module.exports = {
   registerSchema,
   loginSchema,
   updateUserSchema,
-  passwordResetSchema
+  passwordResetSchema,
+  updateUserSchemaWithPassword
 };
