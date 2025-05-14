@@ -10,6 +10,10 @@ const requestOTP = async (req, res) => {
   if(error){
     return res.status(400).json({error:error.details[0].message})
   }
+  const existingUser = User.findByEmail(value.email);
+  if(!existingUser){
+    return res.status(400).json({error:"User not found in the database"})
+  }
   if (!value.email) return res.status(400).json({ error: 'Email is required' });
 
   const otp = generateOTP();
@@ -31,6 +35,7 @@ const verifyOTP = (req, res) => {
   if(error){
     return res.status(400).json({error:error.details[0].message});
   }
+  
   const record = otpStore[value.email];
   if (!record) return res.status(400).json({ error: 'OTP not found or expired' });
 
