@@ -3,6 +3,7 @@ import { fetchUsers ,deleteUser as apiDeleteUser} from "../apis/userApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
+import Sidebar from "../components/Sidebar";
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -42,8 +43,10 @@ const deleteUser = async (userId) => {
     getUsers();
   }, [page]);
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+    <div className="flex w-full h-full gap-2 ">
+    <Sidebar/>
+      <div className="h-full lg:min-w-[84%]">
+        <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-blue-200 p-4 rounded">Total Slots: 100</div>
         <div className="bg-green-200 p-4 rounded">Available: 40</div>
@@ -111,6 +114,7 @@ const deleteUser = async (userId) => {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
