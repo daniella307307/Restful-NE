@@ -62,32 +62,36 @@ class User {
   }
   //GETTINg ALL users
   /**
-   * 
-   * @param {number} page - Current page(default:1) 
+   *
+   * @param {number} page - Current page(default:1)
    * @param {number} limit - Users per page (default:10)
    * @returns {Promise<{users:Array,pagination:Object>}
-   */ 
-  static async getAllPaginated(page=1, limit= 10){
-    const offset = (page -1)*limit;
+   */
+  static async getAllPaginated(page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
 
     const [users] = await pool.query(
-        "Select id, name,email, role,created_at from users LIMIT ? OFFSET ?",
-        [limit,offset]
+      "Select id, name,email, role,created_at from users LIMIT ? OFFSET ?",
+      [limit, offset]
     );
     //Get total count for users
     const [totalRows] = await pool.query("SELECT COUNT(*) AS count FROM users");
     const total = totalRows[0].count;
-    const totalPages = Math.ceil(total/limit);
-    return{
-        users,
-        pagination:{
-            total,totalPages,currentPage:page, limit,
-        },
+    const totalPages = Math.ceil(total / limit);
+    return {
+      users,
+      pagination: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
     };
   }
   //DELETE USER
   static async delete(id) {
-    await pool.query("DELETE FROM users WHERE id=? ", [id]);
+    const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
+    return result; // you can check affectedRows here if you want
   }
   // -----Helper methods -----
   //check if email exists(for validation)
@@ -98,8 +102,11 @@ class User {
     return rows.length > 0;
   }
   // ------ update password ----
-  static async updatePassword(password,userId){
-    await pool.query("UPDATE users SET password =? WHERE id= ?",[password,userId]);
+  static async updatePassword(password, userId) {
+    await pool.query("UPDATE users SET password =? WHERE id= ?", [
+      password,
+      userId,
+    ]);
   }
 }
 

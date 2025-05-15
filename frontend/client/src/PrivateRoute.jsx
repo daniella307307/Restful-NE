@@ -1,20 +1,31 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
-function PrivateRoute({children}) {
-    const getToken= AsyncStorage.getItem('userId','token')
-    if(!getToken){
-        return <div>
-            <h1>Please do login</h1>
-        </div>
-    }else{
-        return <children/>
-    }
-  return (
-    <div>
-      
-    </div>
-  );
-}
+const PrivateRoute = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem('token'); // or use AsyncStorage if needed
+        setIsAuthenticated(!!token);
+      } catch (err) {
+        console.error('Error checking token:', err);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
 
 export default PrivateRoute;

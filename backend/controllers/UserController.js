@@ -173,26 +173,26 @@ const getAllUsers = async(req,res)=>{
   }
 }
 const deleteUser = async (req, res) => {
-    try {
-        const userId = req.query.id; // Changed from req.params.id
+  try {
+    const userId = req.query.id; // expecting ?id=123
 
-        if (!userId) {
-            return res.status(400).json({ error: "User ID is required" });
-        }
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        await User.delete(userId);
-
-        res.status(200).json({ message: "User deleted successfully" });
-    } catch (error) {
-        console.error("Delete error:", error);
-        res.status(500).json({ error: "Internal server error during deletion" });
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
     }
+    // Delete the user
+    const result = await User.delete(userId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found or already deleted" });
+    }
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ error: "Internal server error during deletion" });
+  }
 };
+
 
 module.exports={
     register,
