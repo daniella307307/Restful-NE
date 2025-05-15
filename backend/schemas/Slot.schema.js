@@ -5,10 +5,10 @@ const createSlotSchema=joi.object({
         "string.plateNumber":"Invalid plate format"
     }),
     userId:joi.number().required().messages({
-        "number.userId":"Valid format for the user id"
+        "number.userId":"create a valid user id"
     }),
-    slotStatus: joi.string().valid('available','unavailable').default("unavailable"),
-});
+    slot_status: joi.string().valid('available','unavailable').default("user"),
+})
 
 module.exports={
     createSlotSchema

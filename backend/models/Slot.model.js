@@ -4,8 +4,8 @@ class Slot{
     /**
      * create a new slot
      */
-    static async createSlot({userId,plateNumber,slotStatus="unavailable"}){
-        const [result] = await pool.query("INSERT INTO slot (plateNumber,userId,slotStatus) VALUES(?,?,?)",[plateNumber,userId,slotStatus]);
+    static async createSlot({parking_lot_id, slot_number, is_available, level, type="compact"}){
+        const [result] = await pool.query("INSERT INTO slot (parking_lot_id, slot_number, is_available, level, type) VALUES(?,?,?,?,?)",[parking_lot_id,slot_number,is_available,level,type]);
         return result.insertId;
     }
     /**
@@ -42,11 +42,8 @@ class Slot{
         },
     };
   }
-  static async updateSlot(slotId,status){
-    await pool.query('Update slot set slotStatus=?',[status])
-  }
   static async findById(slotId){
-    await pool.query("Select * from users where id= ?",[slotId]);
+    await pool.query("Select * from slot where id= ?",[slotId]);
   }
 }
 
